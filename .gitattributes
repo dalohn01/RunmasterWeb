@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Unity WebGL pre-compressed files are binary; never normalize them
+*.unityweb binary

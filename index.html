@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity Web Player | Runmaster</title>
+    <style>
+      /* Runmaster is a fixed-aspect PORTRAIT game (1080x1920). The default Unity WebGL template
+         stretches the canvas to whatever shape the browser window happens to be, which is why the
+         UI looked "out of position and wrong scale" in a landscape browser window: CanvasScaler's
+         anchors were positioned against a wide rect instead of the tall one everything was designed
+         for. This template instead letterboxes: the canvas is always kept at the 1080:1920 aspect
+         ratio, scaled to the largest size that fits the window, centered with black bars filling
+         the rest — the same technique portrait mobile games use when shipped on itch.io/Poki/etc. */
+      html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; }
+      #unity-frame { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+      #unity-canvas { display: block; background: #231F20; }
+    </style>
+  </head>
+  <body>
+    <div id="unity-frame">
+      <canvas id="unity-canvas" width=1080 height=1920 tabindex="-1"></canvas>
+    </div>
+    <script src="Build/Runmaster_WebGLPages.loader.js"></script>
+    <script>
+      // Portrait letterbox fit: recompute the canvas's CSS size (never its aspect ratio) to the
+      // largest 1080:1920 rect that fits inside the current window, on load and on every resize.
+      var ASPECT_W = 1080, ASPECT_H = 1920;
+      var canvas = document.querySelector("#unity-canvas");
+      function fitCanvasToWindow() {
+        var availW = window.innerWidth, availH = window.innerHeight;
+        var scale = Math.min(availW / ASPECT_W, availH / ASPECT_H);
+        canvas.style.width = Math.floor(ASPECT_W * scale) + "px";
+        canvas.style.height = Math.floor(ASPECT_H * scale) + "px";
+      }
+      fitCanvasToWindow();
+      window.addEventListener("resize", fitCanvasToWindow);
+
+      createUnityInstance(canvas, {
+        arguments: [],
+        dataUrl: "Build/Runmaster_WebGLPages.data.unityweb",
+        frameworkUrl: "Build/Runmaster_WebGLPages.framework.js.unityweb",
+        codeUrl: "Build/Runmaster_WebGLPages.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "Runmaster",
+        productVersion: "1.0",
+      }).catch((message) => {
+        alert(message);
+      });
+    </script>
+  </body>
+</html>
